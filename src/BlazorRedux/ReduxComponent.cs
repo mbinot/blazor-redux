@@ -1,14 +1,13 @@
 ﻿using System;
-using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Blazor.Components;
-using Microsoft.AspNetCore.Blazor.Services;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorRedux
 {
-    public class ReduxComponent<TState, TAction> : BlazorComponent, IDisposable
+    public class ReduxComponent<TState, TAction> : ComponentBase, IDisposable
     {
         [Inject] public Store<TState, TAction> Store { get; set; }
-        [Inject] private IUriHelper UriHelper { get; set; }
+        [Inject] NavigationManager NavigationManager { get; set; }
 
         public TState State => Store.State;
 
@@ -19,9 +18,9 @@ namespace BlazorRedux
             Store.Change -= OnChangeHandler;
         }
 
-        protected override void OnInit()
+        protected override void OnInitialized()
         {
-            Store.Init(UriHelper);
+            Store.Init(NavigationManager);
             Store.Change += OnChangeHandler;
 
             ReduxDevTools = builder =>
@@ -30,13 +29,17 @@ namespace BlazorRedux
                 builder.OpenComponent<ReduxDevTools>(seq);
                 builder.CloseComponent();
             };
+            
+            base.OnInitialized();
         }
 
         private void OnChangeHandler(object sender, EventArgs e)
         {
-            StateHasChanged();
+//            base.Invoke(StateHasChanged);
+            InvokeAsync(StateHasChanged).Wait();
         }
 
+        
         public void Dispatch(TAction action)
         {
             Store.Dispatch(action);

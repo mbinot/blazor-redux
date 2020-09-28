@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Blazor.RenderTree;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.RenderTree;
 
 namespace BlazorRedux
 {
@@ -9,9 +11,9 @@ namespace BlazorRedux
 
         public RenderFragment Debugger;
         
-        protected override void OnInit()
+        protected override void OnInitialized()
         {
-            base.OnInit();
+            base.OnInitialized();
 
             // ReSharper disable once RedundantAssignment
             Debugger = builder =>
@@ -59,7 +61,7 @@ namespace BlazorRedux
                 {
                     builder.OpenElement(seq++, "div");
                     builder.AddAttribute(seq++, "class", "redux-debugger__historic-entry " + (entry == _selectedEntry ? "redux-debugger__historic-entry--selected" : ""));
-                    builder.AddAttribute(seq++, "onclick", () => SelectEntry(entry));
+// TODO                    builder.AddAttribute(seq++, "onclick", () => SelectEntry(entry));
 
                     builder.OpenElement(seq++, "div");
                     builder.AddAttribute(seq++, "class", "redux-debugger__historic-entry__action");

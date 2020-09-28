@@ -1,15 +1,21 @@
 ﻿using System;
-using Microsoft.JSInterop;
+using Newtonsoft.Json;
 
 namespace BlazorRedux
 {
     public class ReduxOptions<TState>
     {
+
         public ReduxOptions()
         {
+            var settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                PreserveReferencesHandling = PreserveReferencesHandling.None
+            };
             // Defaults
-            StateSerializer = state => Json.Serialize(state);
-            StateDeserializer = Json.Deserialize<TState>;
+            StateSerializer = state => JsonConvert.SerializeObject(state, Formatting.None, settings);
+            StateDeserializer = JsonConvert.DeserializeObject<TState>;
         }
 
         public Reducer<TState, NewLocationAction> LocationReducer { get; set; }
